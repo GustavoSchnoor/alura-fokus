@@ -6,8 +6,20 @@ const banner = document.querySelector('.app__image');
 const titulo = document.querySelector('.app__title');
 const botoes = document.querySelectorAll('.app__card-button');
 const musicaFocoInput = document.querySelector('#alternar-musica');
+const iniciarOuPausarSpan = document.querySelector('#start-pause span');
+const iniciarOuPausarImg = document.querySelector('#start-pause img');
+
+
 const musica = new Audio('/sons/luna-rise-part-one.mp3');
 musica.loop = true;
+const audioPlay = new Audio('/sons/play.wav');
+const audioPause = new Audio('/sons/pause.mp3');
+const audioTempoFinalizado = new Audio('/sons/beep.mp3');
+const startPauseBt = document.querySelector('#start-pause');
+
+let tempoDecorridoEmSegundos = 5;
+let intervaloId = null;
+
 
 musicaFocoInput.addEventListener('change', function() {
     if (musica.paused) {
@@ -68,4 +80,36 @@ function alterarContexto (contexto) {
     }
 }
 
+const contagemRegressiva = function () {
+    if (tempoDecorridoEmSegundos <= 0) {
+        // audioTempoFinalizado.play();
+        alert('Tempo finalizado!');
+        zerar();
+        return
+    }
+    tempoDecorridoEmSegundos -= 1;
+    console.log('Temporizador: ' + tempoDecorridoEmSegundos);
+}
+
+startPauseBt.addEventListener('click', iniciarOuPausar);
+
+function iniciarOuPausar() {
+    // Quando é chamado no evento de CLICK, o intervaloId AINDA TEM O VALOR DE NADA/NULL, por isso ele começa normal, se clicar de novo, ele vai ter algum valor, conforme feito na condição IF. Sendo assim, é chamado a função zerar() onde para a contagem (clearInterval) e da ao intervaloId o valor de NULL novamente,  para após clicar, ser continuado a contagem, visto que a variavel contagemRegressiva nao foi afetado nisso, continuando de onde parou.
+    if (intervaloId) {
+        iniciarOuPausarSpan.textContent ='Começar';
+        iniciarOuPausarImg.src = '/imagens/play_arrow.png';
+        audioPause.play();
+        zerar();
+        return;
+    }
+    iniciarOuPausarSpan.textContent ='Pausar';
+    iniciarOuPausarImg.src = '/imagens/pause.png'
+    audioPlay.play();
+    intervaloId = setInterval (contagemRegressiva, 1000);
+}
+
+function zerar() {
+    clearInterval(intervaloId);
+    intervaloId = null
+}
 
