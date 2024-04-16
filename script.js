@@ -8,7 +8,7 @@ const botoes = document.querySelectorAll('.app__card-button');
 const musicaFocoInput = document.querySelector('#alternar-musica');
 const iniciarOuPausarSpan = document.querySelector('#start-pause span');
 const iniciarOuPausarImg = document.querySelector('#start-pause img');
-
+const tempoNaTela = document.querySelector('#timer');
 
 const musica = new Audio('/sons/luna-rise-part-one.mp3');
 musica.loop = true;
@@ -17,7 +17,7 @@ const audioPause = new Audio('/sons/pause.mp3');
 const audioTempoFinalizado = new Audio('/sons/beep.mp3');
 const startPauseBt = document.querySelector('#start-pause');
 
-let tempoDecorridoEmSegundos = 5;
+let tempoDecorridoEmSegundos = 1500;
 let intervaloId = null;
 
 
@@ -35,6 +35,7 @@ musicaFocoInput.addEventListener('change', function() {
 //     banner.setAttribute('src', '/imagens/foco.png');
 // })
 focoBt.addEventListener('click', function() {
+    tempoDecorridoEmSegundos = 1500;
     alterarContexto('foco');
     focoBt.classList.add('active');
 })
@@ -45,6 +46,7 @@ focoBt.addEventListener('click', function() {
 // })
 
 curtoBt.addEventListener('click', function() {
+    tempoDecorridoEmSegundos = 300;
     alterarContexto('descanso-curto');
     curtoBt.classList.add('active');
 })
@@ -55,11 +57,13 @@ curtoBt.addEventListener('click', function() {
 // })
 
 longoBt.addEventListener('click', function() {
+    tempoDecorridoEmSegundos = 900;
     alterarContexto('descanso-longo');
     longoBt.classList.add('active');
 })
 
 function alterarContexto (contexto) {
+    mostrarTempo();
     botoes.forEach(function(botao) {
         botao.classList.remove('active');
     })
@@ -82,13 +86,13 @@ function alterarContexto (contexto) {
 
 const contagemRegressiva = function () {
     if (tempoDecorridoEmSegundos <= 0) {
-        // audioTempoFinalizado.play();
+        audioTempoFinalizado.play();
         alert('Tempo finalizado!');
         zerar();
         return
     }
     tempoDecorridoEmSegundos -= 1;
-    console.log('Temporizador: ' + tempoDecorridoEmSegundos);
+    mostrarTempo();
 }
 
 startPauseBt.addEventListener('click', iniciarOuPausar);
@@ -112,4 +116,13 @@ function zerar() {
     clearInterval(intervaloId);
     intervaloId = null
 }
+
+function mostrarTempo() {
+    // OBS: A função objeto Date trabalha com MILISEGUNDOS, por isso pegamos o valor em segundos 1500 e multiplicamos por 1000
+    const tempo = new Date(tempoDecorridoEmSegundos * 1000);
+    const tempoFormatado = tempo.toLocaleTimeString('pt-BR', {minute: '2-digit', second: '2-digit'})
+    tempoNaTela.innerHTML = `${tempoFormatado}`;
+}
+
+mostrarTempo();
 
